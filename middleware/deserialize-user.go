@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wpcodevo/golang-gorm-postgres/initializers"
-	"github.com/wpcodevo/golang-gorm-postgres/models"
-	"github.com/wpcodevo/golang-gorm-postgres/utils"
+	"github.com/tolhassianipar/golang-gorm-postgres/initializers"
+	"github.com/tolhassianipar/golang-gorm-postgres/models"
+	"github.com/tolhassianipar/golang-gorm-postgres/utils"
 )
 
 func DeserializeUser() gin.HandlerFunc {

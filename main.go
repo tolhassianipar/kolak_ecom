@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/wpcodevo/golang-gorm-postgres/controllers"
-	"github.com/wpcodevo/golang-gorm-postgres/initializers"
-	"github.com/wpcodevo/golang-gorm-postgres/routes"
+	"github.com/wiwow/golang-gorm-postgres/controllers"
+	"github.com/wiwow/golang-gorm-postgres/initializers"
+	"github.com/wiwow/golang-gorm-postgres/routes"
 )
 
 var (
