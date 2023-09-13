@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/wiwow/golang-gorm-postgres/controllers"
-	"github.com/wiwow/golang-gorm-postgres/initializers"
-	"github.com/wiwow/golang-gorm-postgres/routes"
+	"github.com/tolhassianipar/kolak_ecom/controllers"
+	"github.com/tolhassianipar/kolak_ecom/initializers"
+	"github.com/tolhassianipar/kolak_ecom/routes"
 )
 
 var (
@@ -21,6 +21,9 @@ var (
 
 	PostController      controllers.PostController
 	PostRouteController routes.PostRouteController
+
+	ProductController   controllers.ProductController
+	ProductRouteController routes.ProductRouteController
 )
 
 func init() {
@@ -39,6 +42,9 @@ func init() {
 
 	PostController = controllers.NewPostController(initializers.DB)
 	PostRouteController = routes.NewRoutePostController(PostController)
+
+	ProductController = controllers.NewProductController(initializers.DB)
+	ProductRouteController = routes.NewRouteProductController(ProductController)
 
 	server = gin.Default()
 }
@@ -64,5 +70,6 @@ func main() {
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
 	PostRouteController.PostRoute(router)
+	ProductRouteController.ProductRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }

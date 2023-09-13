@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
+	"strconv"
+	// "time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tolhassianipar/golang-gorm-postgres/initializers"
-	"github.com/tolhassianipar/golang-gorm-postgres/models"
-	"github.com/tolhassianipar/golang-gorm-postgres/utils"
+	"github.com/tolhassianipar/kolak_ecom/initializers"
+	"github.com/tolhassianipar/kolak_ecom/models"
+	"github.com/tolhassianipar/kolak_ecom/utils"
 	"gorm.io/gorm"
 )
 
@@ -41,7 +42,7 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		return
 	}
 
-	now := time.Now()
+	// now := time.Now()
 	newUser := models.User{
 		Name:      payload.Name,
 		Email:     strings.ToLower(payload.Email),
@@ -50,8 +51,6 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		Verified:  true,
 		Photo:     payload.Photo,
 		Provider:  "local",
-		CreatedAt: now,
-		UpdatedAt: now,
 	}
 
 	result := ac.DB.Create(&newUser)
@@ -163,4 +162,35 @@ func (ac *AuthController) LogoutUser(ctx *gin.Context) {
 	ctx.SetCookie("logged_in", "", -1, "/", "localhost", false, false)
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+func (ac *AuthController) DeleteUser(ctx *gin.Context) {
+	userId := ctx.Param("userId")
+
+	result := ac.DB.Delete(&models.User{}, "id = ?", userId)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No user with that title exists"})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
+
+func (ac *AuthController) FindUsers(ctx *gin.Context) {
+	var page = ctx.DefaultQuery("page", "1")
+	var limit = ctx.DefaultQuery("limit", "10")
+
+	intPage, _ := strconv.Atoi(page)
+	intLimit, _ := strconv.Atoi(limit)
+	offset := (intPage - 1) * intLimit
+
+	var users []models.User
+	results := ac.DB.Limit(intLimit).Offset(offset).Find(&users)
+	if results.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(users), "data": users})
 }

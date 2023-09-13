@@ -2,12 +2,11 @@ package models
 
 import (
 	"time"
-
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	gorm.Model
 	Name      string    `gorm:"type:varchar(255);not null"`
 	Email     string    `gorm:"uniqueIndex;not null"`
 	Password  string    `gorm:"not null"`
@@ -15,8 +14,7 @@ type User struct {
 	Provider  string    `gorm:"not null"`
 	Photo     string    `gorm:"not null"`
 	Verified  bool      `gorm:"not null"`
-	CreatedAt time.Time `gorm:"not null"`
-	UpdatedAt time.Time `gorm:"not null"`
+	Post      []Post    `gorm:"Foreignkey:UserID;association_foreignkey:ID;"`
 }
 
 type SignUpInput struct {
@@ -33,7 +31,7 @@ type SignInInput struct {
 }
 
 type UserResponse struct {
-	ID        uuid.UUID `json:"id,omitempty"`
+	ID        uint `json:"id,omitempty"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
 	Role      string    `json:"role,omitempty"`

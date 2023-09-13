@@ -1,4 +1,4 @@
-module github.com/wpcodevo/golang-gorm-postgres
+module github.com/tolhassianipar/kolak_ecom
 
 go 1.18
 

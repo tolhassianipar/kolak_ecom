@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tolhassianipar/golang-gorm-postgres/models"
+	"github.com/tolhassianipar/kolak_ecom/models"
 	"gorm.io/gorm"
 )
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/tolhassianipar/golang-gorm-postgres/initializers"
-	"github.com/tolhassianipar/golang-gorm-postgres/models"
+	"github.com/tolhassianipar/kolak_ecom/initializers"
+	"github.com/tolhassianipar/kolak_ecom/models"
 )
 
 func init() {
@@ -19,6 +19,6 @@ func init() {
 
 func main() {
 	initializers.DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
-	initializers.DB.AutoMigrate(&models.User{}, &models.Post{})
+	initializers.DB.AutoMigrate(&models.User{}, &models.Post{}, &models.Product{})
 	fmt.Println("👍 Migration complete")
 }

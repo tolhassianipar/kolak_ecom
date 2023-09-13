@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tolhassianipar/golang-gorm-postgres/controllers"
-	"github.com/tolhassianipar/golang-gorm-postgres/middleware"
+	"github.com/tolhassianipar/kolak_ecom/controllers"
+	"github.com/tolhassianipar/kolak_ecom/middleware"
 )
 
 type PostRouteController struct {
@@ -22,5 +22,6 @@ func (pc *PostRouteController) PostRoute(rg *gin.RouterGroup) {
 	router.GET("/", pc.postController.FindPosts)
 	router.PUT("/:postId", pc.postController.UpdatePost)
 	router.GET("/:postId", pc.postController.FindPostById)
+	router.GET("user/:userId", pc.postController.FindPostsByUser)
 	router.DELETE("/:postId", pc.postController.DeletePost)
 }

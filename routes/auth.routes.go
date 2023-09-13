@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tolhassianipar/golang-gorm-postgres/controllers"
-	"github.com/tolhassianipar/golang-gorm-postgres/middleware"
+	"github.com/tolhassianipar/kolak_ecom/controllers"
+	"github.com/tolhassianipar/kolak_ecom/middleware"
 )
 
 type AuthRouteController struct {
@@ -21,4 +21,6 @@ func (rc *AuthRouteController) AuthRoute(rg *gin.RouterGroup) {
 	router.POST("/login", rc.authController.SignInUser)
 	router.GET("/refresh", rc.authController.RefreshAccessToken)
 	router.GET("/logout", middleware.DeserializeUser(), rc.authController.LogoutUser)
+	router.GET("/users", rc.authController.FindUsers)
+	router.DELETE("users/:userId", rc.authController.DeleteUser)
 }
