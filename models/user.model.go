@@ -2,19 +2,22 @@ package models
 
 import (
 	"time"
+
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Name      string    `gorm:"type:varchar(255);not null"`
-	Email     string    `gorm:"uniqueIndex;not null"`
-	Password  string    `gorm:"not null"`
-	Role      string    `gorm:"type:varchar(255);not null"`
-	Provider  string    `gorm:"not null"`
-	Photo     string    `gorm:"not null"`
-	Verified  bool      `gorm:"not null"`
-	Post      []Post    `gorm:"Foreignkey:UserID;association_foreignkey:ID;"`
+	Name     string `gorm:"type:varchar(255);not null"`
+	Email    string `gorm:"uniqueIndex;not null"`
+	Password string `gorm:"not null"`
+	Role     string `gorm:"type:varchar(255);not null"`
+	Provider string `gorm:"not null"`
+	Photo    string `gorm:"not null"`
+	Verified bool   `gorm:"not null"`
+	Post     []Post `gorm:"Foreignkey:UserID;association_foreignkey:ID;"`
+	Cart     Cart   `json:"cart"`
+	CartID   uint   `gorm:"column:cart_id" json:"cart_id,omitempty"`
 }
 
 type SignUpInput struct {
@@ -31,7 +34,7 @@ type SignInInput struct {
 }
 
 type UserResponse struct {
-	ID        uint `json:"id,omitempty"`
+	ID        uint      `json:"id,omitempty"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
 	Role      string    `json:"role,omitempty"`
@@ -39,4 +42,5 @@ type UserResponse struct {
 	Provider  string    `json:"provider"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Cart      Cart      `json:"cart"`
 }

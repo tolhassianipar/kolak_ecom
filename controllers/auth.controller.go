@@ -3,8 +3,9 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"strconv"
+	"strings"
+
 	// "time"
 
 	"github.com/gin-gonic/gin"
@@ -42,15 +43,27 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		return
 	}
 
+	newCart := models.Cart{
+		Price: 0,
+	}
+
+	cartResult := ac.DB.Create(&newCart)
+
+	if cartResult.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": "Something bad happened"})
+		return
+	}
+
 	// now := time.Now()
 	newUser := models.User{
-		Name:      payload.Name,
-		Email:     strings.ToLower(payload.Email),
-		Password:  hashedPassword,
-		Role:      "user",
-		Verified:  true,
-		Photo:     payload.Photo,
-		Provider:  "local",
+		Name:     payload.Name,
+		Email:    strings.ToLower(payload.Email),
+		Password: hashedPassword,
+		Role:     "user",
+		Verified: true,
+		Photo:    payload.Photo,
+		Provider: "local",
+		CartID:   newCart.ID,
 	}
 
 	result := ac.DB.Create(&newUser)
@@ -85,7 +98,7 @@ func (ac *AuthController) SignInUser(ctx *gin.Context) {
 	}
 
 	var user models.User
-	result := ac.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
+	result := ac.DB.Preload("Cart").First(&user, "email = ?", strings.ToLower(payload.Email))
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email or Password"})
 		return
@@ -186,7 +199,7 @@ func (ac *AuthController) FindUsers(ctx *gin.Context) {
 	offset := (intPage - 1) * intLimit
 
 	var users []models.User
-	results := ac.DB.Limit(intLimit).Offset(offset).Find(&users)
+	results := ac.DB.Preload("Post").Preload("Cart").Limit(intLimit).Offset(offset).Find(&users)
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
 		return

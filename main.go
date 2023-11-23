@@ -22,8 +22,11 @@ var (
 	PostController      controllers.PostController
 	PostRouteController routes.PostRouteController
 
-	ProductController   controllers.ProductController
+	ProductController      controllers.ProductController
 	ProductRouteController routes.ProductRouteController
+
+	CartController      controllers.CartController
+	CartRouteController routes.CartRouteController
 )
 
 func init() {
@@ -45,6 +48,9 @@ func init() {
 
 	ProductController = controllers.NewProductController(initializers.DB)
 	ProductRouteController = routes.NewRouteProductController(ProductController)
+
+	CartController = controllers.NewCartController(initializers.DB)
+	CartRouteController = routes.NewRouteCartController(CartController)
 
 	server = gin.Default()
 }
@@ -71,5 +77,6 @@ func main() {
 	UserRouteController.UserRoute(router)
 	PostRouteController.PostRoute(router)
 	ProductRouteController.ProductRoute(router)
+	CartRouteController.CartRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }

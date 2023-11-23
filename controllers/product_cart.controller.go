@@ -10,15 +10,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductController struct {
+type ProductCartController struct {
 	DB *gorm.DB
 }
 
-func NewProductController(DB *gorm.DB) ProductController {
-	return ProductController{DB}
+func NewProductCartController(DB *gorm.DB) ProductCartController {
+	return ProductCartController{DB}
 }
 
-func (pd *ProductController) CreateProduct(ctx *gin.Context) {
+func (pdc *ProductCartController) CreateProduct(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(models.User)
 	var payload *models.CreateProductRequest
 
@@ -35,7 +35,7 @@ func (pd *ProductController) CreateProduct(ctx *gin.Context) {
 		UserID:   currentUser.ID,
 	}
 
-	result := pd.DB.Create(&newProduct)
+	result := pdc.DB.Create(&newProduct)
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
 		return
@@ -49,7 +49,7 @@ func (pd *ProductController) CreateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newProdResponse})
 }
 
-func (pd *ProductController) UpdateProduct(ctx *gin.Context) {
+func (pdc *ProductCartController) UpdateProduct(ctx *gin.Context) {
 	productId := ctx.Param("productId")
 
 	var payload *models.UpdateProduct
@@ -58,7 +58,7 @@ func (pd *ProductController) UpdateProduct(ctx *gin.Context) {
 		return
 	}
 	var updatedProduct models.Product
-	result := pd.DB.First(&updatedProduct, "id = ?", productId)
+	result := pdc.DB.First(&updatedProduct, "id = ?", productId)
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No product with that title exists"})
 		return
@@ -71,16 +71,16 @@ func (pd *ProductController) UpdateProduct(ctx *gin.Context) {
 		Image:     payload.Image,
 	}
 
-	pd.DB.Model(&updatedProduct).Updates(productToUpdate)
+	pdc.DB.Model(&updatedProduct).Updates(productToUpdate)
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedProduct})
 }
 
-func (pd *ProductController) FindProductById(ctx *gin.Context) {
+func (pdc *ProductCartController) FindProductById(ctx *gin.Context) {
 	productId := ctx.Param("productId")
 
 	var product models.Product
-	result := pd.DB.Preload("User").First(&product, "id = ?", productId)
+	result := pdc.DB.Preload("User").First(&product, "id = ?", productId)
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No product with that title exists"})
 		return
@@ -89,7 +89,7 @@ func (pd *ProductController) FindProductById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": product})
 }
 
-func (pd *ProductController) FindProducts(ctx *gin.Context) {
+func (pdc *ProductCartController) FindProducts(ctx *gin.Context) {
 	var page = ctx.DefaultQuery("page", "1")
 	var limit = ctx.DefaultQuery("limit", "10")
 
@@ -98,7 +98,7 @@ func (pd *ProductController) FindProducts(ctx *gin.Context) {
 	offset := (intPage - 1) * intLimit
 
 	var products []models.Product
-	results := pd.DB.Preload("User").Limit(intLimit).Offset(offset).Find(&products)
+	results := pdc.DB.Preload("User").Limit(intLimit).Offset(offset).Find(&products)
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
 		return
@@ -107,7 +107,7 @@ func (pd *ProductController) FindProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(products), "data": products})
 }
 
-func (pd *ProductController) FindProductsByUser(ctx *gin.Context) {
+func (pdc *ProductCartController) FindProductsByUser(ctx *gin.Context) {
 	userId := ctx.Param("userId")
 	var page = ctx.DefaultQuery("page", "1")
 	var limit = ctx.DefaultQuery("limit", "10")
@@ -117,10 +117,10 @@ func (pd *ProductController) FindProductsByUser(ctx *gin.Context) {
 	offset := (intPage - 1) * intLimit
 
 	var productresponses []models.ProductQueryResponse
-    results := pd.DB.Model(&models.Product{}).Limit(intLimit).Offset(offset).Find(&productresponses, "user_id = ?", userId)
+    results := pdc.DB.Model(&models.Product{}).Limit(intLimit).Offset(offset).Find(&productresponses, "user_id = ?", userId)
 
 	// var product []models.product
-	// results := pd.DB.Preload("User").Limit(intLimit).Offset(offset).Find(&product, "user_id = ?", userId)
+	// results := pdc.DB.Preload("User").Limit(intLimit).Offset(offset).Find(&product, "user_id = ?", userId)
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
 		return
@@ -129,10 +129,10 @@ func (pd *ProductController) FindProductsByUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(productresponses), "data": productresponses})
 }
 
-func (pd *ProductController) DeleteProduct(ctx *gin.Context) {
+func (pdc *ProductCartController) DeleteProduct(ctx *gin.Context) {
 	productId := ctx.Param("productId")
 
-	result := pd.DB.Delete(&models.Product{}, "id = ?", productId)
+	result := pdc.DB.Delete(&models.Product{}, "id = ?", productId)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No product with that title exists"})
