@@ -105,10 +105,11 @@ func (pd *CartController) CreateCartItem(ctx *gin.Context) {
 
 	for i := 0; i < len(cartItems); i++ {
 		cartItemResponses = append(cartItemResponses, models.CartItemResponse{
+			ID:          cartItems[i].ID,
 			Name:        cartItems[i].Name,
 			Description: cartItems[i].Description,
 			Qty:         cartItems[i].Qty,
-			CartID:      cartItems[i].ID,
+			CartID:      cartItems[i].CartID,
 			Price:       cartItems[i].Price,
 		})
 	}
@@ -128,6 +129,11 @@ func (pd *CartController) DeleteCartItem(ctx *gin.Context) {
 	var newDataCart models.Cart
 	var cartItemToDelete models.CartItem
 	result := pd.DB.Model(models.CartItem{}).First(&cartItemToDelete, "id", cartItemId)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No cartitem with that title exists"})
+		return
+	}
 
 	var cartToUpdate models.Cart
 	result = pd.DB.Model(&models.Cart{}).Preload("CartItems").First(&cartToUpdate, "ID = ?", currentUser.Cart.ID)
@@ -164,7 +170,7 @@ func (pd *CartController) DeleteCartItem(ctx *gin.Context) {
 			Name:        cartItems[i].Name,
 			Description: cartItems[i].Description,
 			Qty:         cartItems[i].Qty,
-			CartID:      cartItems[i].ID,
+			CartID:      cartItems[i].CartID,
 			Price:       cartItems[i].Price,
 		})
 	}
@@ -258,7 +264,8 @@ func (pd *CartController) FindCarts(ctx *gin.Context) {
 	}
 
 	var cartItems []models.CartItem
-	result = pd.DB.Model(models.CartItem{}).Find(&cartItems, "cart_id = ?", currentUser.Cart.ID)
+	// result = pd.DB.Model(models.CartItem{}).Find(&cartItems, "cart_id = ?", currentUser.Cart.ID)
+	result = pd.DB.Model(models.CartItem{}).Find(&cartItems)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error})
@@ -269,16 +276,20 @@ func (pd *CartController) FindCarts(ctx *gin.Context) {
 
 	for i := 0; i < len(cartItems); i++ {
 		cartItemResponses = append(cartItemResponses, models.CartItemResponse{
+			ID:          cartItems[i].ID,
 			Name:        cartItems[i].Name,
 			Description: cartItems[i].Description,
 			Qty:         cartItems[i].Qty,
-			CartID:      cartItems[i].ID,
+			CartID:      cartItems[i].CartID,
+			Price:       cartItems[i].Price,
 		})
 	}
 
 	var response models.CartResponse
-	response.CartItems = cartItemResponses
-	response.Price = cartResponse.Price
+	response = models.CartResponse{
+		CartItems: cartItemResponses,
+		Price:     cartResponse.Price,
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": response})
 }

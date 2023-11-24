@@ -7,12 +7,12 @@ import (
 type Cart struct {
 	gorm.Model
 	CartItems []CartItem `gorm:"foreignKey:CartID;association_foreignkey:ID;"`
-	Price     int        `gorm:"not null" json:"price,omitempty"`
+	Price     int        `gorm:"not null" json:"price"`
 }
 
 type CartResponse struct {
-	CartItems []CartItemResponse `json:"cartItems,omitempty"`
-	Price     int                `json:"price,omitempty"`
+	CartItems []CartItemResponse `json:"cartItems"`
+	Price     int                `json:"price"`
 }
 
 // func (order *Order) GetOrderStatusAsString() string {
