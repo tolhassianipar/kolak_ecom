@@ -17,8 +17,8 @@ func NewRouteProductController(productController controllers.ProductController) 
 func (pc *ProductRouteController) ProductRoute(rg *gin.RouterGroup) {
 
 	router := rg.Group("products")
-	router.Use(middleware.DeserializeUser())
-	router.POST("/", pc.productController.CreateProduct)
+	router.POST("/", middleware.IsAuthorized("CreateProduct"), pc.productController.CreateProduct)
+	router.Use(middleware.IsAuthenticated())
 	router.GET("/", pc.productController.FindProducts)
 	router.PUT("/:productId", pc.productController.UpdateProduct)
 	router.GET("/:productId", pc.productController.FindProductById)

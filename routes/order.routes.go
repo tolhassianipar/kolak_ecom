@@ -17,7 +17,7 @@ func NewRouteOrderController(orderController controllers.OrderController) OrderR
 func (pc *OrderRouteController) OrderRoute(rg *gin.RouterGroup) {
 
 	router := rg.Group("orders")
-	router.Use(middleware.DeserializeUser())
+	router.Use(middleware.IsAuthenticated())
 	router.GET("/", pc.orderController.FindOrders)
 	router.POST("/", pc.orderController.CreateOrder)
 	router.DELETE("/:orderId", pc.orderController.DeleteOrder)

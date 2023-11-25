@@ -17,7 +17,7 @@ func NewRouteCartController(cartController controllers.CartController) CartRoute
 func (pc *CartRouteController) CartRoute(rg *gin.RouterGroup) {
 
 	router := rg.Group("carts")
-	router.Use(middleware.DeserializeUser())
+	router.Use(middleware.IsAuthenticated())
 	router.POST("/items/:productId", pc.cartController.CreateCartItem)
 	router.PUT("/items/:cartItemId", pc.cartController.UpdateCartItem)
 	router.DELETE("/items/:cartItemId", pc.cartController.DeleteCartItem)

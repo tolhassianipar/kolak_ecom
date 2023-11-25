@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-
 	"github.com/gin-gonic/gin"
 	"github.com/tolhassianipar/kolak_ecom/models"
 	"gorm.io/gorm"
@@ -20,6 +19,9 @@ func NewProductController(DB *gorm.DB) ProductController {
 
 func (pd *ProductController) CreateProduct(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(models.User)
+
+	// example userpermission
+
 	var payload *models.CreateProductRequest
 
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
@@ -28,11 +30,11 @@ func (pd *ProductController) CreateProduct(ctx *gin.Context) {
 	}
 
 	newProduct := models.Product{
-		Name:     payload.Name,
-		Description:   payload.Description,
-		Price:     payload.Price,
-		Image:     payload.Image,
-		UserID:   currentUser.ID,
+		Name:        payload.Name,
+		Description: payload.Description,
+		Price:       payload.Price,
+		Image:       payload.Image,
+		UserID:      currentUser.ID,
 	}
 
 	result := pd.DB.Create(&newProduct)
@@ -41,10 +43,10 @@ func (pd *ProductController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 	newProdResponse := models.CreateProductResponse{
-		Name: newProduct.Name,
+		Name:        newProduct.Name,
 		Description: newProduct.Description,
-		Price: newProduct.Price,
-		Image: newProduct.Image,
+		Price:       newProduct.Price,
+		Image:       newProduct.Image,
 	}
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newProdResponse})
 }
@@ -63,12 +65,12 @@ func (pd *ProductController) UpdateProduct(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No product with that title exists"})
 		return
 	}
-	
+
 	productToUpdate := models.Product{
-		Name:     payload.Name,
-		Description:   payload.Description,
-		Price:     payload.Price,
-		Image:     payload.Image,
+		Name:        payload.Name,
+		Description: payload.Description,
+		Price:       payload.Price,
+		Image:       payload.Image,
 	}
 
 	pd.DB.Model(&updatedProduct).Updates(productToUpdate)
@@ -117,7 +119,7 @@ func (pd *ProductController) FindProductsByUser(ctx *gin.Context) {
 	offset := (intPage - 1) * intLimit
 
 	var productresponses []models.ProductQueryResponse
-    results := pd.DB.Model(&models.Product{}).Limit(intLimit).Offset(offset).Find(&productresponses, "user_id = ?", userId)
+	results := pd.DB.Model(&models.Product{}).Limit(intLimit).Offset(offset).Find(&productresponses, "user_id = ?", userId)
 
 	// var product []models.product
 	// results := pd.DB.Preload("User").Limit(intLimit).Offset(offset).Find(&product, "user_id = ?", userId)

@@ -80,10 +80,7 @@ func (pd *OrderController) CreateOrder(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
 		return
 	}
-	println(cartToUpdate.Price, totalPrice)
 	updatedPrice := cartToUpdate.Price - totalPrice
-	println("updatedPrice")
-	println(updatedPrice)
 	// newCartData := models.Cart{
 	// 	Price: updatedPrice,
 	// }
