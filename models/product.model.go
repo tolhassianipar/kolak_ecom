@@ -23,6 +23,7 @@ type ProductQueryResponse struct {
 }
 
 type CreateProductResponse struct {
+	ID          uint   `json:id,omitempty`
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
 	Price       int    `json:"price,omitempty"`

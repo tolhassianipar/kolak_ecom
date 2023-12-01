@@ -43,6 +43,7 @@ func (pd *ProductController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 	newProdResponse := models.CreateProductResponse{
+		ID:          newProduct.ID,
 		Name:        newProduct.Name,
 		Description: newProduct.Description,
 		Price:       newProduct.Price,
