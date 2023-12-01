@@ -12,8 +12,8 @@ type User struct {
 	Email    string `gorm:"uniqueIndex;not null"`
 	Password string `gorm:"not null"`
 	Provider string `gorm:"not null"`
-	File     File   `json:"photo"`
-	FileID   uint   `gorm:"column:file_id" json:"photo_id,omitempty"`
+	File     File   `json:"photo,omitempty"`
+	FileID   uint   `gorm:"column:file_id;default:null" json:"photo_id,omitempty"`
 	Verified bool   `gorm:"not null"`
 	Post     []Post `gorm:"Foreignkey:UserID;association_foreignkey:ID;"`
 	Cart     Cart   `json:"cart"`
@@ -37,8 +37,7 @@ type SignUpInput struct {
 	Email           string `json:"email" binding:"required"`
 	Password        string `json:"password" binding:"required,min=8"`
 	PasswordConfirm string `json:"passwordConfirm" binding:"required"`
-	Photo           string `json:"photo" binding:"required"`
-	Dob             string `json:"dob"`
+	Dob             string `json:"dob,omitempty"`
 	FileID          uint   `json:"photoId,omitempty"`
 }
 
