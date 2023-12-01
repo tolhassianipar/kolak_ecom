@@ -81,7 +81,7 @@ func (pc *FileController) CreateFile(ctx *gin.Context) {
 		}
 
 		fileSize := (uint)(file.Size)
-		images[index] = models.File{Filename: fileName, FilePath: string(filepath.Separator) + "api/" + filePath, FileSize: fileSize}
+		images[index] = models.File{Filename: fileName, FilePath: string(filepath.Separator) + "api/" + filePath, FileSize: fileSize, OriginalName: file.Filename}
 	}
 
 	// database := infrastructure.GetDb()

@@ -50,11 +50,21 @@ type UserResponse struct {
 	ID        uint      `json:"id,omitempty"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
-	Role      string    `json:"role,omitempty"`
 	Photo     string    `json:"photo,omitempty"`
 	Provider  string    `json:"provider"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Cart      Cart      `json:"cart"`
 	Dob       string    `json:"dob"`
+}
+
+type UserUpdateResponse struct {
+	ID        uint           `json:"id,omitempty"`
+	Name      string         `json:"name,omitempty"`
+	Email     string         `json:"email,omitempty"`
+	Role      []RoleResponse `json:"role,omitempty"`
+	Photo     string         `json:"photo,omitempty"`
+	Provider  string         `json:"provider"`
+	Dob       string         `json:"dob"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
 }

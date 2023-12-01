@@ -40,7 +40,13 @@ func (pc *RoleController) CreateRole(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newRole})
+	roleResponse := models.RoleResponse{
+		Id:         newRole.ID,
+		Name:       newRole.Name,
+		Permission: newRole.Permission,
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": roleResponse})
 }
 
 func (pc *RoleController) UpdateRole(ctx *gin.Context) {

@@ -150,7 +150,29 @@ func (pc *AuthController) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": userToUpdate})
+	var rolesResponse []models.RoleResponse
+	for _, role := range userToUpdate.Roles {
+		rolesResponse = append(rolesResponse, models.RoleResponse{
+			Id:         role.ID,
+			Name:       role.Name,
+			Permission: role.Permission,
+		})
+	}
+
+	userResponse := &models.UserUpdateResponse{
+		ID:        userToUpdate.ID,
+		Name:      userToUpdate.Name,
+		Email:     userToUpdate.Email,
+		Photo:     userToUpdate.File.FilePath,
+		Provider:  userToUpdate.Provider,
+		CreatedAt: userToUpdate.CreatedAt,
+		UpdatedAt: userToUpdate.UpdatedAt,
+		Dob:       fmt.Sprint(userToUpdate.Dob),
+		Role:      rolesResponse,
+		// Role:		newUser.Roles
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": userResponse})
 }
 
 func (ac *AuthController) SignInUser(ctx *gin.Context) {
