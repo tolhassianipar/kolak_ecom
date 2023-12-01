@@ -23,7 +23,7 @@ func (uc *UserController) GetMe(ctx *gin.Context) {
 		ID:        currentUser.ID,
 		Name:      currentUser.Name,
 		Email:     currentUser.Email,
-		Photo:     currentUser.Photo,
+		Photo:     currentUser.File.FilePath,
 		Provider:  currentUser.Provider,
 		CreatedAt: currentUser.CreatedAt,
 		UpdatedAt: currentUser.UpdatedAt,

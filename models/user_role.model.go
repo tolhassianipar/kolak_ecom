@@ -12,6 +12,11 @@ type UserRole struct {
 	RoleId uint
 }
 
+type UserRoleRequest struct {
+	UserId uint `json:"userId"`
+	RoleId uint `json:"roleId"`
+}
+
 func (UserRole) TableName() string {
 	return "user_role"
 }

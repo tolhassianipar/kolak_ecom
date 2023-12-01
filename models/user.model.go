@@ -8,17 +8,28 @@ import (
 
 type User struct {
 	gorm.Model
-	Name      string     `gorm:"type:varchar(255);not null"`
-	Email     string     `gorm:"uniqueIndex;not null"`
-	Password  string     `gorm:"not null"`
-	Provider  string     `gorm:"not null"`
-	Photo     string     `gorm:"not null"`
-	Verified  bool       `gorm:"not null"`
-	Post      []Post     `gorm:"Foreignkey:UserID;association_foreignkey:ID;"`
-	Cart      Cart       `json:"cart"`
-	CartID    uint       `gorm:"column:cart_id" json:"cart_id,omitempty"`
-	Roles     []Role     `gorm:"many2many:user_role;"`
-	UserRoles []UserRole `gorm:"foreignkey:UserId"`
+	Name     string `gorm:"type:varchar(255);not null"`
+	Email    string `gorm:"uniqueIndex;not null"`
+	Password string `gorm:"not null"`
+	Provider string `gorm:"not null"`
+	File     File   `json:"photo"`
+	FileID   uint   `gorm:"column:file_id" json:"photo_id,omitempty"`
+	Verified bool   `gorm:"not null"`
+	Post     []Post `gorm:"Foreignkey:UserID;association_foreignkey:ID;"`
+	Cart     Cart   `json:"cart"`
+	CartID   uint   `gorm:"column:cart_id" json:"cart_id,omitempty"`
+	Roles    []Role `gorm:"many2many:user_role;"`
+	// UserRoles []UserRole `gorm:"foreignkey:UserId"`
+	Dob time.Time `json:"dob"`
+}
+
+type UserUpdateRequest struct {
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Verified bool   `json:"verified,omitempty"`
+	Roles    []uint `json:"roles,omitempty"`
+	Dob      string `json:"dob,omitempty"`
+	FileID   uint   `json:"photoId,omitempty"`
 }
 
 type SignUpInput struct {
@@ -27,6 +38,8 @@ type SignUpInput struct {
 	Password        string `json:"password" binding:"required,min=8"`
 	PasswordConfirm string `json:"passwordConfirm" binding:"required"`
 	Photo           string `json:"photo" binding:"required"`
+	Dob             string `json:"dob"`
+	FileID          uint   `json:"photoId,omitempty"`
 }
 
 type SignInInput struct {
@@ -44,4 +57,5 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Cart      Cart      `json:"cart"`
+	Dob       string    `json:"dob"`
 }

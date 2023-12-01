@@ -30,6 +30,15 @@ var (
 
 	OrderController      controllers.OrderController
 	OrderRouteController routes.OrderRouteController
+
+	RoleController      controllers.RoleController
+	RoleRouteController routes.RoleRouteController
+
+	UserRoleController      controllers.UserRoleController
+	UserRoleRouteController routes.UserRoleRouteController
+
+	FileController      controllers.FileController
+	FileRouteController routes.FileRouteController
 )
 
 func init() {
@@ -58,6 +67,15 @@ func init() {
 	OrderController = controllers.NewOrderController(initializers.DB)
 	OrderRouteController = routes.NewRouteOrderController(OrderController)
 
+	RoleController = controllers.NewRoleController(initializers.DB)
+	RoleRouteController = routes.NewRouteRoleController(RoleController)
+
+	UserRoleController = controllers.NewUserRoleController(initializers.DB)
+	UserRoleRouteController = routes.NewRouteUserRoleController(UserRoleController)
+
+	FileController = controllers.NewFileController(initializers.DB)
+	FileRouteController = routes.NewRouteFileController(FileController)
+
 	server = gin.Default()
 }
 
@@ -78,6 +96,7 @@ func main() {
 		message := "Welcome to Golang with Gorm and Postgres"
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 	})
+	router.Static("/static", "./static")
 
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
@@ -85,5 +104,9 @@ func main() {
 	ProductRouteController.ProductRoute(router)
 	CartRouteController.CartRoute(router)
 	OrderRouteController.OrderRoute(router)
+	RoleRouteController.RoleRoute(router)
+	UserRoleRouteController.UserRoleRoute(router)
+	FileRouteController.FileRoute(router)
+
 	log.Fatal(server.Run(":" + config.ServerPort))
 }

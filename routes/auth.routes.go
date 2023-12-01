@@ -22,5 +22,6 @@ func (rc *AuthRouteController) AuthRoute(rg *gin.RouterGroup) {
 	router.GET("/refresh", rc.authController.RefreshAccessToken)
 	router.GET("/logout", middleware.IsAuthenticated(), rc.authController.LogoutUser)
 	router.GET("/users", rc.authController.FindUsers)
+	router.PUT("/users/:userId", rc.authController.UpdateUser)
 	router.DELETE("users/:userId", rc.authController.DeleteUser)
 }

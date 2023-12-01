@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	// "time"
 
@@ -54,15 +55,20 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		return
 	}
 
-	// now := time.Now()
+	layoutFormat := "02/01/2006 MST" // 02 for month, 01 for date, and 2006 for year
+	value := payload.Dob
+	date, _ := time.Parse(layoutFormat, value)
+	// fmt.Println(value, "\t\t->", date.String())
+	// 2015-09-02 00:00:00 +0700 WIB
 	newUser := models.User{
 		Name:     payload.Name,
 		Email:    strings.ToLower(payload.Email),
 		Password: hashedPassword,
 		Verified: true,
-		Photo:    payload.Photo,
+		FileID:   payload.FileID,
 		Provider: "local",
 		CartID:   newCart.ID,
+		Dob:      date,
 	}
 
 	result := ac.DB.Create(&newUser)
@@ -79,12 +85,72 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		ID:        newUser.ID,
 		Name:      newUser.Name,
 		Email:     newUser.Email,
-		Photo:     newUser.Photo,
+		Photo:     newUser.File.FilePath,
 		Provider:  newUser.Provider,
 		CreatedAt: newUser.CreatedAt,
 		UpdatedAt: newUser.UpdatedAt,
+		Dob:       fmt.Sprint(newUser.Dob),
+		// Role:		newUser.Roles
 	}
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": gin.H{"user": userResponse}})
+}
+
+// TODO add user role function through upddate user//
+func (pc *AuthController) UpdateUser(ctx *gin.Context) {
+	var payload *models.UserUpdateRequest
+	userId := ctx.Param("userId")
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var roles []models.Role
+	result := pc.DB.Where("id IN ? ", payload.Roles).Find(&roles)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+
+	var userToUpdate models.User
+	result = pc.DB.First(&userToUpdate, "id=? ", userId)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+
+	value := payload.Dob
+	layoutFormat := "02/01/2006 MST"
+	date, _ := time.Parse(layoutFormat, value)
+	newUserData := models.User{
+		Name:     payload.Name,
+		Email:    payload.Email,
+		Verified: payload.Verified,
+		Dob:      date,
+		FileID:   payload.FileID,
+	}
+
+	result = pc.DB.Model(&userToUpdate).UpdateColumn("Roles", roles)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+
+	result = pc.DB.Model(&userToUpdate).Updates(newUserData)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+
+	result = pc.DB.Preload("File").First(&userToUpdate, "id=? ", userId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": userToUpdate})
 }
 
 func (ac *AuthController) SignInUser(ctx *gin.Context) {
@@ -197,7 +263,7 @@ func (ac *AuthController) FindUsers(ctx *gin.Context) {
 	offset := (intPage - 1) * intLimit
 
 	var users []models.User
-	results := ac.DB.Preload("Post").Preload("Cart").Limit(intLimit).Offset(offset).Find(&users)
+	results := ac.DB.Preload("Post").Preload("Cart").Preload("Roles").Limit(intLimit).Offset(offset).Find(&users)
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
 		return
